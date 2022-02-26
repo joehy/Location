@@ -10,11 +10,9 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.gms.common.api.ResolvableApiException
@@ -72,7 +70,7 @@ class SaveReminderFragment : BaseFragment() {
             Timber.v( "latitude:::::::: ${_viewModel.latitude.value}")
             Timber.v( "longitude:::::::: ${_viewModel.longitude.value}")
             reminderData = ReminderDataItem(title, description, location, latitude, longitude)
-            if (_viewModel.validateAndSaveReminder(reminderData)) {
+            if (_viewModel.validateEnteredData(reminderData)) {
                 checkPermissionsAndStartGeofencing()
             }
         }
@@ -157,6 +155,7 @@ class SaveReminderFragment : BaseFragment() {
 
             geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent)?.run {
                 addOnSuccessListener {
+                    _viewModel.validateAndSaveReminder(reminderData)
                     Timber.e(geofence.requestId)
                 }
                 addOnFailureListener {
